@@ -69,7 +69,7 @@ namespace PusherServer
             {
                 if (_client == null)
                 {
-                    _client = new RestClient();
+                    _client = new RestClient(GetBaseUrl().ToString());
                 }
                 return _client;
             }
@@ -85,5 +85,17 @@ namespace PusherServer
 
         /// <inheritdoc/>
         public string HostName { get; set; }
+
+        private static string DEFAULT_REST_API_HOST = "api.pusherapp.com";
+
+        private Uri GetBaseUrl()
+        {
+            string hostName = HostName ?? DEFAULT_REST_API_HOST;
+
+            string baseUrl = (Encrypted ? "https" : "http") + "://" +
+                hostName +
+                (Port == 80 ? "" : ":" + Port);
+            return new Uri(baseUrl);
+        }
     }
 }

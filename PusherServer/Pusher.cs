@@ -235,15 +235,11 @@ namespace PusherServer
 
         public IGetResult<T> Get<T>(string resource)
         {
-            _options.RestClient.BaseUrl = GetBaseUrl(_options);
-
             return Get<T>(resource, null);
         }
 
         public IGetResult<T> Get<T>(string resource, object parameters)
         {
-            _options.RestClient.BaseUrl = GetBaseUrl(_options);
-
             var request = CreateAuthenticatedRequest(Method.GET, resource, parameters, null);
 
             IRestResponse response = _options.RestClient.Execute(request);
@@ -258,8 +254,6 @@ namespace PusherServer
 
         private IRestResponse ExecuteTrigger(object requestBody)
         {
-           _options.RestClient.BaseUrl = GetBaseUrl(_options);
-
             var request = CreateAuthenticatedRequest(Method.POST, "/events", null, requestBody);
             
             IRestResponse response = _options.RestClient.Execute(request);
@@ -268,8 +262,6 @@ namespace PusherServer
 
         private void ExecuteTriggerAsync(object requestBody, Action<IRestResponse> callback)
         {
-            _options.RestClient.BaseUrl = GetBaseUrl(_options);
-
             var request = CreateAuthenticatedRequest(Method.POST, "/events", null, requestBody);
             _options.RestClient.ExecuteAsync(request, callback);
         }
@@ -346,17 +338,5 @@ namespace PusherServer
                 throw new ArgumentException(string.Format("{0} cannot be null or empty", argumentName));
             }
         }
-
-        private Uri GetBaseUrl(IPusherOptions _options)
-        {
-            string hostName = _options.HostName ?? DEFAULT_REST_API_HOST;
-
-            string baseUrl = (_options.Encrypted ? "https" : "http") + "://" +
-                hostName +
-                (_options.Port == 80 ? "" : ":" + _options.Port);
-            return new Uri( baseUrl );
-        }
-
-        
     }
 }
